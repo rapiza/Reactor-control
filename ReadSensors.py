@@ -2,6 +2,7 @@ import paho.mqtt.client as mqtt
 import random
 import time
 import keyboard
+import max6675
 
 sample_time = 100
 sampleAnterior = 0
@@ -14,6 +15,12 @@ def time_current_ms():
     return time.time_ns() * 0.000001
 
 
+# set the pin for communicate with MAX6675
+cs = 22
+sck = 18
+so = 16
+# max6675.set_pin(CS, SCK, SO, unit)   [unit : 0 - raw, 1 - Celsius, 2 - Fahrenheit]
+max6675.set_pin(cs, sck, so, 1)
 def tem():
     return round(random.uniform(0, 130), 2)
 
@@ -31,7 +38,7 @@ def Mass():
 
 
 publisher = mqtt.Client()
-publisher.connect('127.0.0.1', 1883, 60)
+publisher.connect('192.168.0.100', 1883, 60)
 
 while True:
     #x = Mtime_current()
@@ -49,7 +56,7 @@ while True:
             publisher.publish("planta/reflujo/Pres2", pres2)
             publisher.publish("planta/reactor/Mass", mass)
         if band == 1:
-            tpm = tem()
+            tpm = max6675.read_temp(cs)
             datos = f"{pres1};{pres2};{mass};T{tpm}K\n"
             print(datos)
             publisher.publish("planta/reactor/Pres1", pres1)
