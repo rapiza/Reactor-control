@@ -1,4 +1,4 @@
-import paho.mqtt.client as mqtt
+import paho.mqtt.client as mqtt #doc https://pypi.org/project/paho-mqtt/#single
 import random
 import time
 #weight libs
