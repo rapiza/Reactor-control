@@ -10,7 +10,7 @@ import busio
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 #max6675 lib
-from max6675 import MAX6675, MAX6675Error
+import max6675 
 
 
 
@@ -26,7 +26,7 @@ ads = ADS.ADS1115(i2c) # Create the ADC object using the I2C bus
 chan0 = AnalogIn(ads, ADS.P0)
 chan1 = AnalogIn(ads, ADS.P0, ADS.P1)
 
-#max config
+#max6675 config
 cs_pin1 =  22#15 
 clock_pin1 = 17#11
 data_pin1 = 27#13
@@ -34,14 +34,12 @@ data_pin1 = 27#13
 cs_pin2 =  8#24
 clock_pin2 = 11#23
 data_pin2 = 9#21
-units = "c"
 
 #sample time setting
-sample_time = 1000
+sample_time = 500
 sampleAnterior = 0
 sampleCurrent = 0
 delta_sample = 0
-band = 0
 
 
 def time_current_ms():
@@ -59,15 +57,16 @@ def tem():
     return round(random.uniform(0, 130), 2)
 =======
 def Temp_rct():
-    
-    thermocouple_rct = MAX6675(cs_pin1, clock_pin1, data_pin1, units)
-    temp_rct=thermocouple_rct.get()
+    max6675.set_pin(cs_pin1, clock_pin1, data_pin1, 1)
+    temp_rct= max6675.read_temp(cs_pin1)
     print(temp_rct,'°C TMP_RCT\n')
+    return(temp_rct)
     
 def Temp_tlv():
-    thermocouple_tlv = MAX6675(cs_pin2, clock_pin2, data_pin2, units)
-    temp_tlv=thermocouple_tlv.get()
+    max6675.set_pin(cs_pin2, clock_pin2, data_pin2, 1)
+    temp_tlv= max6675.read_temp(cs_pin2)
     print(temp_tlv, '°C TMP_TLV\n')
+    return(temp_tlv)
 
 def Prs_rct():
     prs_rct=26.0684*chan0.voltage+14.6959
@@ -112,7 +111,7 @@ while Connected != True: #Esperar para que exista conexion
 try:
     while True:
         #x = time_current_ms()
-        time.sleep(0.001)
+        time.sleep(0.01)
         sampleCurrent = time_current_ms()
         delta_sample = sampleCurrent - sampleAnterior
         
