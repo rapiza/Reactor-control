@@ -9,10 +9,13 @@ import board
 import busio
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
-#import max6675
+#max6675 lib
+from max6675 import MAX6675, MAX6675Error
+
+
 
 #weight config
-GPIO.setmode(GPIO.BCM)  # set GPIO pin mode to BCM numbering
+#GPIO.setmode(GPIO.BOARD) # set GPIO pin mode to BOARD
 hx = HX711(dout_pin=5, pd_sck_pin=6) # create objet of hx711 class
 hx.set_offset(24750) #offset on 0
 hx.set_scale_ratio(21250/160) #scale ratio to convert in gr
@@ -22,6 +25,16 @@ i2c = busio.I2C(board.SCL, board.SDA) # Create the I2C bus
 ads = ADS.ADS1115(i2c) # Create the ADC object using the I2C bus
 chan0 = AnalogIn(ads, ADS.P0)
 chan1 = AnalogIn(ads, ADS.P0, ADS.P1)
+
+#max config
+cs_pin1 =  22#15 
+clock_pin1 = 17#11
+data_pin1 = 27#13
+
+cs_pin2 =  8#24
+clock_pin2 = 11#23
+data_pin2 = 9#21
+units = "c"
 
 #sample time setting
 sample_time = 1000
@@ -35,6 +48,7 @@ def time_current_ms():
     return time.time_ns() * 0.000001
 
 
+<<<<<<< HEAD
 # set the pin for communicate with MAX6675
 cs = 22
 sck = 18
@@ -43,6 +57,17 @@ so = 16
 #max6675.set_pin(cs, sck, so, 1)
 def tem():
     return round(random.uniform(0, 130), 2)
+=======
+def Temp_rct():
+    
+    thermocouple_rct = MAX6675(cs_pin1, clock_pin1, data_pin1, units)
+    temp_rct=thermocouple_rct.get()
+    print(temp_rct,'°C TMP_RCT\n')
+    
+def Temp_tlv():
+    thermocouple_tlv = MAX6675(cs_pin2, clock_pin2, data_pin2, units)
+    temp_tlv=thermocouple_tlv.get()
+    print(temp_tlv, '°C TMP_TLV\n')
 
 def Prs_rct():
     prs_rct=26.0684*chan0.voltage+14.6959
@@ -90,27 +115,21 @@ try:
         time.sleep(0.001)
         sampleCurrent = time_current_ms()
         delta_sample = sampleCurrent - sampleAnterior
+        
         if delta_sample >= sample_time:
+            
             pres1 = Prs_rct()
             pres2 = Prs_clm_rf()
             mass = Mass()
-            if band == 0:
-                datos = f"{pres1};{pres2};{mass}\n"
-                #print(datos)
-                publisher.publish("planta/reactor/Pres1", pres1)
-                publisher.publish("planta/reflujo/Pres2", pres2)
-                publisher.publish("planta/reactor/Mass", mass)
-            if band == 1:
-                tpm = tem() #max6675.read_temp(cs)
-                datos = f"{pres1};{pres2};{mass};T{tpm}K\n"
-                #print(datos)
-                publisher.publish("planta/reactor/Pres1", pres1)
-                publisher.publish("planta/reflujo/Pres2", pres2)
-                publisher.publish("planta/reactor/Mass", mass)
-                publisher.publish("planta/reactor/Temp", tpm)
-            band += 1
-            if band == 2:
-                band = 0
+            temp_rct= Temp_rct()
+            temp_tlv= Temp_tlv() 
+            #print(datos)
+            publisher.publish("planta/reactor/Pres1", pres1)
+            publisher.publish("planta/reflujo/Pres2", pres2)
+            publisher.publish("planta/reactor/Mass", mass)
+            publisher.publish("planta/reactor/Temp", temp_rct)
+            publisher.publish("planta/tolva/Temp2", temp_tlv)
+            
             sampleAnterior = sampleCurrent
         #y = time_current_ms()
         #print("Tiempo que se demoro en milisegundo todo un ciclo", round(y - x, 2))
