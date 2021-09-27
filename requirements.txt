@@ -1,0 +1,3 @@
+sudo pip install paho-mqtt
+sudo pip install keyboard
+link de pines de la raspberry https://es.pinout.xyz/pinout/spi

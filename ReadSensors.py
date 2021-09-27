@@ -17,23 +17,24 @@ import max6675
 #weight config
 #GPIO.setmode(GPIO.BOARD) # set GPIO pin mode to BOARD
 hx = HX711(dout_pin=5, pd_sck_pin=6) # create objet of hx711 class
-hx.set_offset(24750) #offset on 0
-hx.set_scale_ratio(21250/160) #scale ratio to convert in gr
-
+off = hx.get_raw_data_mean(3)
+hx.set_offset(off) #offset on 0
+hx.set_scale_ratio(21250/159) #scale ratio to convert in gr
+'''
 #adc config
 i2c = busio.I2C(board.SCL, board.SDA) # Create the I2C bus
 ads = ADS.ADS1115(i2c) # Create the ADC object using the I2C bus
 chan0 = AnalogIn(ads, ADS.P0)
-chan1 = AnalogIn(ads, ADS.P0, ADS.P1)
+chan1 = AnalogIn(ads, ADS.P0, ADS.P1)'''
 
 #max6675 config
-cs_pin1 =  22#15 
-clock_pin1 = 17#11
-data_pin1 = 27#13
+cs_pin1 =  22#15 Reactor
+clock_pin1 = 17#11 Reactor
+data_pin1 = 27#13  Reactor
 
-cs_pin2 =  8#24
-clock_pin2 = 11#23
-data_pin2 = 9#21
+cs_pin2 =  8#24 Tolva
+clock_pin2 = 11#23 Tolava
+data_pin2 = 9#21   Tolava
 
 #sample time setting
 sample_time = 500
@@ -45,8 +46,6 @@ delta_sample = 0
 def time_current_ms():
     return time.time_ns() * 0.000001
 
-
-<<<<<<< HEAD
 # set the pin for communicate with MAX6675
 cs = 22
 sck = 18
@@ -55,34 +54,40 @@ so = 16
 #max6675.set_pin(cs, sck, so, 1)
 def tem():
     return round(random.uniform(0, 130), 2)
-=======
+
 def Temp_rct():
     max6675.set_pin(cs_pin1, clock_pin1, data_pin1, 1)
     temp_rct= max6675.read_temp(cs_pin1)
-    print(temp_rct,'°C TMP_RCT\n')
+    #print(temp_rct,'°C TMP_RCT\n')
     return(temp_rct)
     
 def Temp_tlv():
     max6675.set_pin(cs_pin2, clock_pin2, data_pin2, 1)
     temp_tlv= max6675.read_temp(cs_pin2)
-    print(temp_tlv, '°C TMP_TLV\n')
+    #print(temp_tlv, '°C TMP_TLV\n')
     return(temp_tlv)
 
 def Prs_rct():
     prs_rct=26.0684*chan0.voltage+14.6959
-    print(prs_rct, 'PSI\n')
+    #print(prs_rct, 'PSI\n')
+    prs_rct = round(prs_rct,2)
     return (prs_rct)
 
 
 def Prs_clm_rf():
     prs_clm_rf= 26.0684*chan1.voltage+14.6959
-    print(prs_clm_rf, 'PSI\n')
+    #print(prs_clm_rf, 'PSI\n')
+    prs_clm_rf = round(prs_clm_rf,2)
     return (prs_clm_rf)
 
 
 def Mass():
     peso=1.0*hx.get_weight_mean(1)
-    print(peso, 'gr\n')
+    peso = round(peso,2)
+    if(peso<0):
+        #print(peso, 'gr\n')
+        peso=0
+    #print(peso, 'gr\n')
     return (peso)
 
 
@@ -117,17 +122,19 @@ try:
         
         if delta_sample >= sample_time:
             
-            pres1 = Prs_rct()
-            pres2 = Prs_clm_rf()
+            #pres1 = Prs_rct()
+            #pres2 = Prs_clm_rf()
             mass = Mass()
             temp_rct= Temp_rct()
-            temp_tlv= Temp_tlv() 
+            temp_tlv= Temp_tlv()
+            datos = f"{temp_rct} ; {temp_tlv} ; {mass}\n"
             #print(datos)
+            '''
             publisher.publish("planta/reactor/Pres1", pres1)
             publisher.publish("planta/reflujo/Pres2", pres2)
             publisher.publish("planta/reactor/Mass", mass)
             publisher.publish("planta/reactor/Temp", temp_rct)
-            publisher.publish("planta/tolva/Temp2", temp_tlv)
+            publisher.publish("planta/tolva/Temp2", temp_tlv)'''
             
             sampleAnterior = sampleCurrent
         #y = time_current_ms()
