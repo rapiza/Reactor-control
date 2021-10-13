@@ -3,7 +3,7 @@ import random
 import time
 #weight libs
 import RPi.GPIO as GPIO  # import GPIO
-#from hx711 import HX711  # import the class HX711
+from hx711 import HX711  # import the class HX711
 #adc libs
 import board
 import busio
@@ -16,10 +16,10 @@ import max6675
 
 #weight config
 #GPIO.setmode(GPIO.BOARD) # set GPIO pin mode to BOARD
-'''hx = HX711(dout_pin=5, pd_sck_pin=6) # create objet of hx711 class
+hx = HX711(dout_pin=5, pd_sck_pin=6) # create objet of hx711 class
 off = hx.get_raw_data_mean()
 hx.set_offset(off) #offset on 0
-hx.set_scale_ratio(21250/159) #scale ratio to convert in gr'''
+hx.set_scale_ratio(21250/159) #scale ratio to convert in gr
 
 '''
 #adc config
@@ -103,7 +103,7 @@ def whenConnect(client, userdata, flags,rc):
 
 Connected = False
 
-server_address = "10.2.129.1"
+server_address = "192.168.43.167"
 port = 1883
 
 publisher = mqtt.Client()
@@ -125,17 +125,17 @@ try:
             
             #pres1 = Prs_rct()
             #pres2 = Prs_clm_rf()
-            #mass = Mass()
+            mass = Mass()
             temp_tlv= Temp_rct()
             temp_rct= Temp_tlv()
-            datos = f"{temp_rct} ; {temp_tlv}\n"
+            datos = f"{temp_rct} ; {temp_tlv}; {mass}\n"
             print(datos)
             
             #publisher.publish("planta/reactor/Pres1", pres1)
             #publisher.publish("planta/reflujo/Pres2", pres2)
             #publisher.publish("planta/reactor/Mass", mass)
-            publisher.publish("planta/reactor/Temp", temp_rct)
-            publisher.publish("planta/tolva/Temp2", temp_tlv)
+            #publisher.publish("planta/reactor/Temp", temp_rct)
+            #publisher.publish("planta/tolva/Temp2", temp_tlv)
             
             sampleAnterior = sampleCurrent
         #y = time_current_ms()
