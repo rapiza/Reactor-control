@@ -21,12 +21,12 @@ off = hx.get_raw_data_mean()
 hx.set_offset(off) #offset on 0
 hx.set_scale_ratio(21250/159) #scale ratio to convert in gr
 
-'''
+
 #adc config
 i2c = busio.I2C(board.SCL, board.SDA) # Create the I2C bus
 ads = ADS.ADS1115(i2c) # Create the ADC object using the I2C bus
 chan0 = AnalogIn(ads, ADS.P0)
-chan1 = AnalogIn(ads, ADS.P0, ADS.P1)'''
+chan1 = AnalogIn(ads, ADS.P0, ADS.P1)
 
 #max6675 config
 cs_pin1 =  22#15 Reactor
@@ -70,16 +70,16 @@ def Temp_tlv():
 
 def Prs_rct():
     prs_rct=26.0684*chan0.voltage+14.6959
-    #print(prs_rct, 'PSI\n')
+    #print(chan0.voltage, 'PSI\n')
     prs_rct = round(prs_rct,2)
-    return (prs_rct)
+    return (prs_rct) #round(chan0.voltage,2)
 
 
 def Prs_clm_rf():
     prs_clm_rf= 26.0684*chan1.voltage+14.6959
-    #print(prs_clm_rf, 'PSI\n')
+    #print(chan1.voltage, 'PSI\n')
     prs_clm_rf = round(prs_clm_rf,2)
-    return (prs_clm_rf)
+    return (prs_clm_rf) #round(chan1.voltage,2)
 
 
 def Mass():
@@ -123,19 +123,19 @@ try:
         
         if delta_sample >= sample_time:
             
-            #pres1 = Prs_rct()
-            #pres2 = Prs_clm_rf()
+            pres1 = Prs_rct()
+            pres2 = Prs_clm_rf()
             mass = Mass()
             temp_tlv= Temp_rct()
             temp_rct= Temp_tlv()
-            datos = f"{temp_rct} ; {temp_tlv}; {mass}\n"
+            datos = f"{temp_rct} ; {temp_tlv}; {mass}; {pres1}; {pres2}\n"
             print(datos)
             
-            #publisher.publish("planta/reactor/Pres1", pres1)
-            #publisher.publish("planta/reflujo/Pres2", pres2)
-            #publisher.publish("planta/reactor/Mass", mass)
-            #publisher.publish("planta/reactor/Temp", temp_rct)
-            #publisher.publish("planta/tolva/Temp2", temp_tlv)
+            publisher.publish("planta/reactor/Pres1", pres1)
+            publisher.publish("planta/reflujo/Pres2", pres2)
+            publisher.publish("planta/reactor/Mass", mass)
+            publisher.publish("planta/reactor/Temp", temp_rct)
+            publisher.publish("planta/tolva/Temp2", temp_tlv)
             
             sampleAnterior = sampleCurrent
         #y = time_current_ms()
