@@ -103,7 +103,7 @@ def whenConnect(client, userdata, flags,rc):
 
 Connected = False
 
-server_address = "192.168.43.167"
+server_address = "127.0.0.1"
 port = 1883
 
 publisher = mqtt.Client()
