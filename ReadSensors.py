@@ -26,7 +26,7 @@ hx.set_scale_ratio(21250/159) #scale ratio to convert in gr
 i2c = busio.I2C(board.SCL, board.SDA) # Create the I2C bus
 ads = ADS.ADS1115(i2c) # Create the ADC object using the I2C bus
 chan0 = AnalogIn(ads, ADS.P0)
-chan1 = AnalogIn(ads, ADS.P0, ADS.P1)
+chan1 = AnalogIn(ads, ADS.P1)
 
 #max6675 config
 cs_pin1 =  22#15 Reactor
@@ -69,14 +69,14 @@ def Temp_tlv():
     return(temp_tlv)
 
 def Prs_rct():
-    prs_rct=26.0684*chan0.voltage+14.6959
+    prs_rct=43.4473*chan0.voltage+1.6617
     #print(chan0.voltage, 'PSI\n')
     prs_rct = round(prs_rct,2)
-    return (prs_rct) #round(chan0.voltage,2)
+    return (prs_rct) #round(chan0.voltage,2) # 
 
 
 def Prs_clm_rf():
-    prs_clm_rf= 26.0684*chan1.voltage+14.6959
+    prs_clm_rf= 43.4473*chan1.voltage+1.6617
     #print(chan1.voltage, 'PSI\n')
     prs_clm_rf = round(prs_clm_rf,2)
     return (prs_clm_rf) #round(chan1.voltage,2)
